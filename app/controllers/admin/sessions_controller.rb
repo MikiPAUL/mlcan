@@ -23,12 +23,16 @@ class Admin::SessionsController < Devise::SessionsController
           headers['Authorization']  = "Bearer #{doorkeeper_token.token}"
         end
       end
-  end
+    end
 
   # DELETE /resource/sign_out
-  # def destroy
-  #   super
-  # end
+  def destroy
+    super do |admin|
+      @token = Doorkeeper::AccessToken.find_by(token: request.headers['Authorization'])
+      @token.destroy if @token
+      render json: "logout successful"
+    end
+  end
 
   # protected
 
